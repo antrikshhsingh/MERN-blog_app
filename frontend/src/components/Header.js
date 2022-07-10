@@ -9,12 +9,17 @@ import {
   Tab,
 } from "@mui/material";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
+import { useDispatch, useSelector } from "react-redux";
+
+import { authActions } from "../store";
 
 const Header = () => {
+  const dispath = useDispatch();
   const [value, setvalue] = useState(0);
+  const isLoggedIn = useSelector((state) => state.isLoggedIn);
 
-  const navigation = useNavigate();
   return (
     <AppBar
       position="sticky"
@@ -25,44 +30,55 @@ const Header = () => {
     >
       <Toolbar>
         <Typography variant="h5">BlogsApp</Typography>
-        <Box marginLeft={"auto"} marginRight={"auto"}>
-          <Tabs
-            textColor="inherit"
-            value={value}
-            onChange={(e, val) => setvalue(val)}
-          >
-            <Tab LinkComponent={Link} to="/blogs" label="All BLogs" />
-            <Tab LinkComponent={Link} to="/myblogs" label="My BLogs" />
-          </Tabs>
-        </Box>
+        {isLoggedIn && (
+          <Box marginLeft={"auto"} marginRight={"auto"}>
+            <Tabs
+              textColor="inherit"
+              value={value}
+              onChange={(e, val) => setvalue(val)}
+            >
+              <Tab LinkComponent={Link} to="/blogs" label="All BLogs" />
+              <Tab LinkComponent={Link} to="/myblogs" label="My BLogs" />
+              <Tab LinkComponent={Link} to="/blogs/add" label="Add Blog" />
+            </Tabs>
+          </Box>
+        )}
         <Box display="flex" marginLeft="auto">
-          <Button
-            LinkComponent={Link}
-            to="/auth"
-            variant="contained"
-            color="warning"
-            sx={{ margin: 1, borderRadius: 10 }}
-          >
-            Login
-          </Button>
-          <Button
-            LinkComponent={Link}
-            to="/auth"
-            variant="contained"
-            color="warning"
-            sx={{ margin: 1, borderRadius: 10 }}
-          >
-            Signup
-          </Button>
-          <Button
-            LinkComponent={Link}
-            to="/auth"
-            variant="contained"
-            color="warning"
-            sx={{ margin: 1, borderRadius: 10 }}
-          >
-            Logout
-          </Button>
+          {!isLoggedIn && (
+            <>
+              <Button
+                LinkComponent={Link}
+                to="/auth"
+                variant="contained"
+                color="warning"
+                sx={{ margin: 1, borderRadius: 10 }}
+              >
+                Login
+              </Button>
+              <Button
+                LinkComponent={Link}
+                to="/auth"
+                variant="contained"
+                color="warning"
+                sx={{ margin: 1, borderRadius: 10 }}
+              >
+                Signup
+              </Button>{" "}
+            </>
+          )}
+
+          {isLoggedIn && (
+            <Button
+              onClick={() => dispath(authActions.logout())}
+              LinkComponent={Link}
+              to="/auth"
+              variant="contained"
+              color="warning"
+              sx={{ margin: 1, borderRadius: 10 }}
+            >
+              Logout
+            </Button>
+          )}
         </Box>
       </Toolbar>
     </AppBar>
